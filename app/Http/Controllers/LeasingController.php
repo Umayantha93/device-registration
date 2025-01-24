@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateLeasingRequest;
 use App\Http\Resources\LeasingResource;
 use App\Models\Device;
 use App\Models\LeasingPlan;
@@ -11,6 +12,7 @@ class LeasingController extends Controller
 {
     public function getInfo($id)
     {
+        
         $device = Device::with(['deviceOwner', 'leasingPeriods'])->find($id);
 
         if (!$device) {
@@ -30,13 +32,10 @@ class LeasingController extends Controller
         return new LeasingResource($device, $leasingPeriodsComputed);
     }
 
-    public function updateLeasing(Request $request, $id)
+
+    public function updateLeasing(UpdateLeasingRequest $request, $id)
     {
-        $validated = $request->validate([
-            'deviceId' => 'required|exists:devices,device_id',
-            'deviceTrainings' => 'required|integer|min:0',
-        ]);
-        
+
         $Device = Device::with(['leasingPeriods'])->find($id);
 
         if (!$Device) {
@@ -49,7 +48,7 @@ class LeasingController extends Controller
             return response()->json(['error' => 'Leasing period not found'], 404);
         }
 
-        $updatedLeasigPeriod = $leasingPeriod->leasing_construction_maximum_training += $validated['deviceTrainings'];
+        $updatedLeasigPeriod = $leasingPeriod->leasing_construction_maximum_training += $request['deviceTrainings'];
         $leasingPlan = LeasingPlan::find($leasingPeriod->leasing_plan_id);  
 
         if($leasingPlan->maximum_training < $updatedLeasigPeriod){

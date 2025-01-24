@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
 use App\Models\Device;
 use App\Models\ActivationCode;
@@ -10,25 +11,20 @@ use Illuminate\Support\Str;
 
 class DeviceController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'deviceId' => 'required|exists:devices,device_id',
-            'activationCode' => 'nullable|exists:activation_codes,code',
-        ]);
-
-        $device = Device::with('activationCode')->where('device_id', $validated['deviceId'])->first();
+        $device = Device::with('activationCode')->where('device_id', $request['deviceId'])->first();
 
         if ($device->device_type == 'restricted') {
             return response()->json(['error' => 'The device has been suspended'], 400);
         }
 
-        if ($device->device_type == 'leasing' && $validated['activationCode'] == null) {
+        if ($device->device_type == 'leasing' && $request['activationCode'] == null) {
             return response()->json(['error' => 'The device registered with a leasing plan cannot be set to a free account'], 400);
         }
 
-        if ($validated['activationCode']) {
-            $activationCode = ActivationCode::where('code', $validated['activationCode'])->first();
+        if ($request['activationCode']) {
+            $activationCode = ActivationCode::where('code', $request['activationCode'])->first();
             $activationCodeId = $activationCode->id;
 
             if ($device->activation_code_id === $activationCodeId) {
