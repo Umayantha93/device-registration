@@ -73,7 +73,7 @@ php artisan migrate
 php artisan db:seed
 ```
 
-### Step 6: Run application
+### Step 7: Run application
 
 ```bash
 php artisan serve
