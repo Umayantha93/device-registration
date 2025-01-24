@@ -79,20 +79,6 @@ php artisan db:seed
 php artisan serve
 ```
 
-## Usage
-
-### Upload SQL File
-
-1. Go to the **Bulk Upload** section of the application.
-2. Select an SQL file.
-3. The application will parse and insert the data into the database.
-
-### Upload XLS File
-
-1. Go to the **Bulk Upload** section of the application.
-2. Select an XLS file.
-3. The application will process the Excel file and insert the data into the database.
-
 ## Technologies Used
 
 -   **Backend**: Laravel 11+
